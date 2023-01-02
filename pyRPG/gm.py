@@ -41,5 +41,7 @@ class GM:
             else:
                 # LOOK <ITEM>
                 item = "".join(tokens[1:])
-            if item
+            if item:
+                # Scan over all items in inventory and room, checking for any item that has a descriptor that matches
+                pass
 
