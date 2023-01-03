@@ -10,6 +10,8 @@ class Mob:
         self.flags = set()
         self.setflags(flags)
 
+        self.room = None
+
     def setflags(self, flags_to_set):
         for flag in flags_to_set:
             if flag.upper() in self.possible_flags:

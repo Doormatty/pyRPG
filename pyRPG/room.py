@@ -1,11 +1,16 @@
-from itertools import chain, count
+from __future__ import annotations
+from typing import TYPE_CHECKING
 
-from pyRPG import Obj, Mob
+if TYPE_CHECKING:
+    from pyRPG.obj import Obj
+    from pyRPG.mob import Mob
+from itertools import chain, count
 
 try:
     from rich import print
 except ImportError:
     pass
+
 
 class Room:
     id_iter = count()
@@ -23,8 +28,8 @@ class Room:
         # Look at the room
         retval = f'{self.long_desc}\n\n'
         # Look at the items
-        for obj in self.get_items_and_mobs():
-            retval += f'{obj.short_name}\n'
+        for item in self.get_items_and_mobs():
+            retval += f'{item.name}\n'
 
         # Look at the exits
         if self.exits:
@@ -43,26 +48,30 @@ class Room:
 
     def _on_exit(self):
         """Call the _on_exit method on each mob and item in the room"""
-        for obj in self.get_items_and_mobs():
+        for item in self.get_items_and_mobs():
             # if it has an "_on_exit" method
-            if getattr(obj, "_on_exit", None) is not None:
-                obj._on_exit()
+            if getattr(item, "_on_exit", None) is not None:
+                item._on_exit()
 
     def _on_enter(self):
         """Call the _on_enter method on each mob and item in the room"""
-        for obj in self.get_items_and_mobs():
+        for item in self.get_items_and_mobs():
             # if it has an "_on_enter" method
-            if getattr(obj, "_on_enter", None) is not None:
-                obj._on_enter()
+            if getattr(item, "_on_enter", None) is not None:
+                item._on_enter()
 
     def add_item(self, item: Obj):
         self.items.append(item)
+        item.rooms.append(self)
 
     def remove_item(self, item: Obj):
         self.items.remove(item)
+        item.rooms.remove(self)
 
     def add_mob(self, mob: Mob):
         self.mobs.append(mob)
+        mob.room = self
 
     def remove_mob(self, mob: Mob):
         self.mobs.remove(mob)
+        mob.room = None
